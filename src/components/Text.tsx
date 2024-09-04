@@ -1,5 +1,3 @@
-import { ReactNode } from "react";
-
 type Rainbow =
   | "red"
   | "orange"
@@ -9,15 +7,19 @@ type Rainbow =
   | "indigo"
   | "violet";
 
-type TextProps<C extends React.ElementType> = {
+type AsProp<C extends React.ElementType> = {
   as?: C;
-  color?: Rainbow | "black";
 };
 
-type Props<C extends React.ElementType> = React.PropsWithChildren<
-  TextProps<C>
-> &
-  Omit<React.ComponentPropsWithoutRef<C>, keyof TextProps<C>>;
+type PropsToOmit<C extends React.ElementType, P> = keyof (AsProp<C> & P);
+
+type PolymorphicComponentProps<
+  C extends React.ElementType,
+  Props = object
+> = React.PropsWithChildren<Props & AsProp<C>> &
+  Omit<React.ComponentPropsWithoutRef<C>, PropsToOmit<C, Props>>;
+
+type TextProps = { color?: Rainbow | "black" };
 
 export const Text = <C extends React.ElementType = "span">({
   as,
@@ -25,7 +27,7 @@ export const Text = <C extends React.ElementType = "span">({
   color,
   children,
   ...restProps
-}: Props<C>) => {
+}: PolymorphicComponentProps<C, TextProps>) => {
   const Component = as || "span";
 
   const internalStyles = color ? { style: { ...style, color } } : {};
