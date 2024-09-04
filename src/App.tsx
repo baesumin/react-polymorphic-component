@@ -1,6 +1,6 @@
 import "./App.css";
 import { Text } from "./components";
-import React from "react";
+import React, { useRef } from "react";
 
 const Emphasis = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -11,9 +11,16 @@ const Emphasis = ({ children }: { children: React.ReactNode }) => {
 };
 
 function App() {
+  const ref = useRef<HTMLAnchorElement | null>(null);
+
   return (
     <div className="App">
-      <Text as={"h1"} color="violet" style={{ backgroundColor: "black" }}>
+      <Text
+        ref={ref}
+        as={"h1"}
+        color="violet"
+        style={{ backgroundColor: "black" }}
+      >
         hello
       </Text>
       <Text as={"h2"}>hello</Text>

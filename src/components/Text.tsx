@@ -1,3 +1,5 @@
+import React, { ForwardedRef } from "react";
+
 type Rainbow =
   | "red"
   | "orange"
@@ -21,19 +23,38 @@ type PolymorphicComponentProps<
 
 type TextProps = { color?: Rainbow | "black" };
 
-export const Text = <C extends React.ElementType = "span">({
-  as,
-  style,
-  color,
-  children,
-  ...restProps
-}: PolymorphicComponentProps<C, TextProps>) => {
-  const Component = as || "span";
+type PolymorphicRef<C extends React.ElementType> =
+  React.ComponentPropsWithRef<C>["ref"];
 
-  const internalStyles = color ? { style: { ...style, color } } : {};
-  return (
-    <Component {...restProps} {...internalStyles}>
-      {children}
-    </Component>
-  );
+type Props<C extends React.ElementType, P> = PolymorphicComponentProps<C, P>;
+
+type PolymorphicComponentPropsWithRef<
+  C extends React.ElementType,
+  P
+> = PolymorphicComponentProps<C, P> & {
+  ref?: PolymorphicRef<C>;
 };
+
+type TextComponent = <C extends React.ElementType>(
+  props: PolymorphicComponentPropsWithRef<C, TextProps>
+) => React.ReactElement | null;
+
+export const Text = React.forwardRef(
+  <C extends React.ElementType = "span">(
+    { as, style, color, children, ...restProps }: Props<C, TextProps>,
+    ref?: React.ComponentPropsWithRef<C>["ref"]
+  ) => {
+    const Component = as || "span";
+
+    const internalStyles = color ? { style: { ...style, color } } : {};
+    return (
+      <Component
+        ref={ref as React.Ref<unknown>}
+        {...restProps}
+        {...internalStyles}
+      >
+        {children}
+      </Component>
+    );
+  }
+);
