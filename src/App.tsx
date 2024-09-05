@@ -11,16 +11,11 @@ const Emphasis = ({ children }: { children: React.ReactNode }) => {
 };
 
 function App() {
-  const ref = useRef<HTMLHeadingElement | null>(null);
+  const ref = useRef<HTMLHeadingElement>(null);
 
   return (
     <div className="App">
-      <Text
-        ref={ref}
-        as={"h1"}
-        color="violet"
-        style={{ backgroundColor: "black" }}
-      >
+      <Text ref={ref} color="violet" style={{ backgroundColor: "black" }}>
         hello
       </Text>
       <Text as={"h2"}>hello</Text>
