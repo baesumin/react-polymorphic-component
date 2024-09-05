@@ -1,4 +1,4 @@
-import React, { ForwardedRef } from "react";
+import React from "react";
 
 type Rainbow =
   | "red"
@@ -9,50 +9,46 @@ type Rainbow =
   | "indigo"
   | "violet";
 
+type PolymorphicRef<C extends React.ElementType> =
+  React.ComponentPropsWithRef<C>["ref"];
+
 type AsProp<C extends React.ElementType> = {
   as?: C;
 };
 
 type PropsToOmit<C extends React.ElementType, P> = keyof (AsProp<C> & P);
 
-type PolymorphicComponentProps<
+type PolymorphicComponentProp<
   C extends React.ElementType,
   Props = object
 > = React.PropsWithChildren<Props & AsProp<C>> &
   Omit<React.ComponentPropsWithoutRef<C>, PropsToOmit<C, Props>>;
 
-type TextProps = { color?: Rainbow | "black" };
-
-type PolymorphicRef<C extends React.ElementType> =
-  React.ComponentPropsWithRef<C>["ref"];
-
-type Props<C extends React.ElementType, P> = PolymorphicComponentProps<C, P>;
-
-type PolymorphicComponentPropsWithRef<
+type PolymorphicComponentPropWithRef<
   C extends React.ElementType,
-  P
-> = PolymorphicComponentProps<C, P> & {
-  ref?: PolymorphicRef<C>;
-};
+  Props = object
+> = PolymorphicComponentProp<C, Props> & { ref?: PolymorphicRef<C> };
 
-type TextComponent = <C extends React.ElementType>(
-  props: PolymorphicComponentPropsWithRef<C, TextProps>
-) => React.ReactElement | null;
+type TextProps<C extends React.ElementType> = PolymorphicComponentPropWithRef<
+  C,
+  { color?: Rainbow | "black" }
+>;
 
-export const Text = React.forwardRef(
-  <C extends React.ElementType = "span">(
-    { as, style, color, children, ...restProps }: Props<C, TextProps>,
-    ref?: React.ComponentPropsWithRef<C>["ref"]
+type TextComponent = <C extends React.ElementType = "span">(
+  props: TextProps<C>
+) => React.ReactNode | null;
+
+export const Text: TextComponent = React.forwardRef(
+  <C extends React.ElementType>(
+    { as, color, children }: TextProps<C>,
+    ref?: PolymorphicRef<C>
   ) => {
     const Component = as || "span";
 
-    const internalStyles = color ? { style: { ...style, color } } : {};
+    const style = color ? { style: { color } } : {};
+
     return (
-      <Component
-        ref={ref as React.Ref<unknown>}
-        {...restProps}
-        {...internalStyles}
-      >
+      <Component ref={ref} {...style}>
         {children}
       </Component>
     );

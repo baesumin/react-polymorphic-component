@@ -11,7 +11,7 @@ const Emphasis = ({ children }: { children: React.ReactNode }) => {
 };
 
 function App() {
-  const ref = useRef<HTMLAnchorElement | null>(null);
+  const ref = useRef<HTMLHeadingElement | null>(null);
 
   return (
     <div className="App">
@@ -25,6 +25,7 @@ function App() {
       </Text>
       <Text as={"h2"}>hello</Text>
       <Text>hello</Text>
+      <Text>sdf</Text>
       <br />
       <Text as={Emphasis}>This is important. You are awesome!!!</Text>
     </div>
